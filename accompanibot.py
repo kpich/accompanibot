@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-''' Call this script by passing it some number of directories containing
-    wav files. It will (nonrecursively) find all *.wav files in those
-    directories.
+''' Call this script by passing it the name of a file, each line of which
+    is of the format 'wavfilename weight', with weight a real number.
 '''
 
 import itertools
@@ -17,32 +16,67 @@ MIN_SIMULTANEOUS = 1
 MAX_SIMULTANEOUS = 8
 
 TIMESTEP = 0.1
-LAMBDA = 2.0
+LAMBDA = 2.8
 
-def main(dirs):
-    files = [x for x in itertools.chain(*[[os.path.join(d, f) for f in os.listdir(d)]
-                                          for d in dirs])]
-    files = [x for x in files if x.endswith('.wav')]
-    print 'Using %d audio samples:' % len(files)
-    pprint.pprint(files)
+FADE = 5000
+
+def main(fname):
+    files_weights = [parseline(li) for li in open(fname, 'r') if parseline(li) is not None]
+    normalize_weights(files_weights)
+    print 'Using %d audio samples:' % len(files_weights)
+    pprint.pprint(files_weights)
     pygame.mixer.init()
-    snds = [pygame.mixer.Sound(f) for f in files]
+    snds = [(pygame.mixer.Sound(fw[0]), fw[1]) for fw in files_weights]
     print 'Using %d channels...' % pygame.mixer.get_num_channels()
     stop = False
+    i = 0
     while True:
-        #random.choice(snds).play()
-        time.sleep(TIMESTEP)
-        n = pygame.mixer.get_busy()
-        print '%d playing' % n
-        prob = 1.0 - poisson_cdf(n)
-        print 'n: %f; p: %f; r: %f' % (n, prob, random.random())
-        if prob > random.random():
-            if not stop:
-                random.choice(snds).play()
-    #pygame.mixer.quit()
+        try:
+            #random.choice(snds).play()
+            time.sleep(TIMESTEP)
+            n = pygame.mixer.get_busy()
+            if i % 10 == 0:
+                print '%d playing' % n
+            #prob = 1.0 - poisson_cdf(n)
+            prob = 1.0 - logistic(n)
+            #print 'n: %f; p: %f; r: %f' % (n, prob, random.random())
+            if prob > random.random():
+                if not stop:
+                    w_choice(snds).play()
+            i += 1
+        except KeyboardInterrupt:
+            sys.stdout.write("\nFading out...\n")
+            sys.stdout.flush()
+            pygame.mixer.fadeout(FADE)
+            time.sleep(float(FADE) / 1000)
+            pygame.mixer.quit()
+            sys.exit()
+
+def parseline(line):
+    words = line.split()
+    if len(words) != 2:
+        return None
+    return (words[0], float(words[1]))
+
+def normalize_weights(files_weights):
+    tot = sum(fw[1] for fw in files_weights)
+    for i, (f,w) in enumerate(files_weights):
+        files_weights[i] = (f, float(w) / tot)
+
+# from http://snippets.dzone.com/posts/show/732
+def w_choice(lst):
+    n = random.uniform(0, 1)
+    for item, weight in lst:
+        if n < weight:
+            break
+        n = n - weight
+    return item
+
+def logistic(t):
+    return 1.0 / (1.0 + math.exp(-LAMBDA * t))
 
 def poisson_cdf(t):
     return 1.0 - math.exp(-LAMBDA * t)
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(sys.argv[1])
