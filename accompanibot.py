@@ -25,7 +25,6 @@ def main(fname):
     pygame.mixer.init()
     snds = [(pygame.mixer.Sound(fw[0]), fw[1]) for fw in files_weights]
     print 'Using %d channels...' % pygame.mixer.get_num_channels()
-    stop = False
     i = 0
     while True:
         try:
@@ -38,8 +37,7 @@ def main(fname):
             prob = 1.0 - logistic(n)
             #print 'n: %f; p: %f; r: %f' % (n, prob, random.random())
             if prob > random.random():
-                if not stop:
-                    w_choice(snds).play()
+                w_choice(snds).play()
             i += 1
         except KeyboardInterrupt:
             sys.stdout.write("\nFading out...\n")
