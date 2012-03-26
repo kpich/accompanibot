@@ -12,9 +12,6 @@ import random
 import sys
 import time
 
-MIN_SIMULTANEOUS = 1
-MAX_SIMULTANEOUS = 8
-
 TIMESTEP = 0.1
 LAMBDA = 2.8
 
