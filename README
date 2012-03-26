@@ -1,0 +1,7 @@
+Requires pygame to be installed.
+
+Call it like so:
+
+./accompanibot.py files.txt
+
+this comes with a sample dir of audio files, but it certainly works with arbitrary wav/ogg files.
