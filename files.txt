@@ -32,6 +32,6 @@ audio/44.wav 5
 audio/45.wav 4
 audio/46.wav 2
 audio/47.wav 2
-audio/48.wav 7
+audio/48.wav 10
 audio/49.wav 2
 audio/50.wav 1
