@@ -11,7 +11,7 @@ import sys
 import time
 
 TIMESTEP = 0.1
-LAMBDA = 2.8
+LAMBDA = 2.6
 
 FADE = 5000
 
