@@ -3,9 +3,7 @@
     is of the format 'wavfilename weight', with weight a real number.
 '''
 
-import itertools
 import math
-import os
 import pprint
 import pygame
 import random
@@ -26,13 +24,15 @@ def main(fname):
     snds = [(pygame.mixer.Sound(fw[0]), fw[1]) for fw in files_weights]
     print 'Using %d channels...' % pygame.mixer.get_num_channels()
     i = 0
+    T = 0.0
     while True:
         try:
             #random.choice(snds).play()
             time.sleep(TIMESTEP)
+            T += TIMESTEP
             n = pygame.mixer.get_busy()
             if i % 10 == 0:
-                print '%d playing' % n
+                print '%d playing (%fs)' % (n, T)
             #prob = 1.0 - poisson_cdf(n)
             prob = 1.0 - logistic(n)
             #print 'n: %f; p: %f; r: %f' % (n, prob, random.random())
@@ -43,7 +43,7 @@ def main(fname):
             sys.stdout.write("\nFading out...\n")
             sys.stdout.flush()
             pygame.mixer.fadeout(FADE)
-            time.sleep(float(FADE) / 1000)
+            time.sleep(1.0 + (float(FADE) / 1000))
             pygame.mixer.quit()
             sys.exit()
 
