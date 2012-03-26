@@ -27,15 +27,12 @@ def main(fname):
     T = 0.0
     while True:
         try:
-            #random.choice(snds).play()
             time.sleep(TIMESTEP)
             T += TIMESTEP
             n = pygame.mixer.get_busy()
             if i % 10 == 0:
                 print '%d playing (%fs)' % (n, T)
-            #prob = 1.0 - poisson_cdf(n)
             prob = 1.0 - logistic(n)
-            #print 'n: %f; p: %f; r: %f' % (n, prob, random.random())
             if prob > random.random():
                 w_choice(snds).play()
             i += 1
@@ -69,9 +66,6 @@ def w_choice(lst):
 
 def logistic(t):
     return 1.0 / (1.0 + math.exp(-LAMBDA * t))
-
-def poisson_cdf(t):
-    return 1.0 - math.exp(-LAMBDA * t)
 
 if __name__ == '__main__':
     main(sys.argv[1])
