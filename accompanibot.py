@@ -16,7 +16,8 @@ LAMBDA = 2.6
 FADE = 5000
 
 def main(fname):
-    files_weights = [parseline(li) for li in open(fname, 'r') if parseline(li) is not None]
+    files_weights = [parseline(li) for li in open(fname, 'r')
+                     if parseline(li) is not None]
     normalize_weights(files_weights)
     print 'Using %d audio samples:' % len(files_weights)
     pprint.pprint(files_weights)
